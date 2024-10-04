@@ -1,0 +1,29 @@
+name: React app build docker 
+
+on:
+   push:
+    branches:
+        - main
+   pull_request:
+      branches:
+        - main
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        # services:
+        #     docker:
+        #         image: docker:19.03.12
+        #         options: --privileged
+        #         ports:
+        #             - 2375:2375
+        steps:
+            - name: Checkout code 
+              uses: actions/checkout@v2     
+            
+            # - name: setup docker build
+            #   uses: docker/setup-buildx-action@v2
+            - run: |
+                docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+                docker build -t elton/docker-react -f Dockerfile.dev . 
+                docker run -e CI=true elton/docker-react npm test
+            # -e CI=true - exit the terminal logs after running                      

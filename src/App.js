@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Im have already
+          i was change on the feature branch and i want pull request
         </a>
       </header>
     </div>

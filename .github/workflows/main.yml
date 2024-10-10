@@ -10,20 +10,32 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        # services:
-        #     docker:
-        #         image: docker:19.03.12
-        #         options: --privileged
-        #         ports:
-        #             - 2375:2375
+   
         steps:
             - name: Checkout code 
               uses: actions/checkout@v2     
             
             - name: setup docker build
               uses: docker/setup-buildx-action@v2
-            - run: |
+
+            - name: Running docker cli
+              run: |
                 docker -v
                 docker build -t elton/docker-react -f Dockerfile.dev . 
-                docker run -e CI=true elton/docker-react npm test
+                docker run -e CI=true elton/docker-react npm run test
+            - name: Deply to elastic bean 
+
+              uses: einaregilsson/beanstalk-deploy@v20
+              with:
+                application_name: "react-frontend"
+                environment_name: "React-frontend-dev" 
+                existing_bucket_name: elasticbeanstalk-eu-north-1-975050127442
+                region: eu-north-1
+                version_label: ${{ github.sha }}
+                deployment_package: deploy.zip
+                aws_access_key: ${{ secrets.aws_access_key }}
+                aws_secret_key: ${{ secrets.aws_secret_key }}
+
+            #  http://react-front.eu-north-1.elasticbeanstalk.com/     
+            
             # -e CI=true - exit the terminal logs after r                      
